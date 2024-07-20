@@ -57,4 +57,9 @@ impl Mob {
     fn _on_visible_on_screen_notifier_3d_screen_exited(&mut self) {
         self.base_mut().queue_free();
     }
+
+    #[func]
+    fn squash(&mut self) {
+        self.base_mut().queue_free();
+    }
 }

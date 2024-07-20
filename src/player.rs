@@ -1,5 +1,7 @@
-use godot::classes::{CharacterBody3D, ICharacterBody3D, InputEvent};
+use godot::classes::{CharacterBody3D, ICharacterBody3D, Node};
 use godot::prelude::*;
+
+use crate::mob::Mob;
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody3D)]
@@ -8,6 +10,8 @@ pub struct Player {
 
     speed: f32,
     fall_acceleration: f32,
+    jump_impulse: f32,
+    bounce_impulse: f32,
     target_velocity: Vector3,
 }
 
@@ -18,6 +22,8 @@ impl ICharacterBody3D for Player {
             base,
             speed: 14.0,
             fall_acceleration: 75.0,
+            jump_impulse: 20.0,
+            bounce_impulse: 16.0,
             target_velocity: Vector3::ZERO,
         }
     }
@@ -42,7 +48,7 @@ impl ICharacterBody3D for Player {
             direction = direction.normalized();
             self.base()
                 .get_node_as::<Node3D>("Pivot")
-                .set_basis(Basis::new_looking_at(direction, Vector3::UP, false));
+                .look_at(self.base().get_position() + direction);
         }
 
         self.target_velocity.x = direction.x * self.speed;
@@ -50,10 +56,28 @@ impl ICharacterBody3D for Player {
 
         if !self.base().is_on_floor() {
             self.target_velocity.y -= self.fall_acceleration * delta as f32;
+        } else if input.is_action_just_pressed(StringName::from("move_jump")) {
+            self.target_velocity.y = self.jump_impulse;
         }
 
         let _target_velocity = self.target_velocity.clone();
         self.base_mut().set_velocity(_target_velocity);
         self.base_mut().move_and_slide();
+
+        for index in 0..self.base().get_slide_collision_count() {
+            let collision = self.base_mut().get_slide_collision(index).unwrap();
+            let collider = match collision.get_collider() {
+                Some(collider) => collider.try_cast::<Node>().unwrap(),
+                None => continue,
+            };
+            if collider.is_in_group(StringName::from("mob")) {
+                let mut mob = collider.try_cast::<Mob>().unwrap();
+                if Vector3::UP.dot(collision.get_normal()) > 0.1 {
+                    mob.call(StringName::from("squash"), &[]);
+                    self.target_velocity.y = self.bounce_impulse;
+                    break;
+                }
+            }
+        }
     }
 }

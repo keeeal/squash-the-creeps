@@ -1,11 +1,12 @@
 [gd_scene load_steps=3 format=3 uid="uid://5qhklfavvuon"]
 
-[ext_resource type="PackedScene" uid="uid://bai0tcoqvr5r0" path="res://assets/models/player.glb" id="1_5u30g"]
+[ext_resource type="PackedScene" uid="uid://buq2geg2imjs6" path="res://assets/art/player.glb" id="1_5u30g"]
 
 [sub_resource type="SphereShape3D" id="SphereShape3D_0qyim"]
 radius = 1.0
 
 [node name="Player" type="Player"]
+collision_mask = 6
 
 [node name="Pivot" type="Node3D" parent="."]
 
