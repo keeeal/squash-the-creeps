@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=3 uid="uid://bdea2i3xfb33t"]
+[gd_scene load_steps=5 format=3 uid="uid://bdea2i3xfb33t"]
 
 [ext_resource type="PackedScene" uid="uid://5qhklfavvuon" path="res://scenes/player.tscn" id="1_7633l"]
 
@@ -8,7 +8,14 @@ size = Vector3(60, 2, 60)
 [sub_resource type="BoxMesh" id="BoxMesh_kfawc"]
 size = Vector3(60, 2, 60)
 
-[node name="Main" type="Node"]
+[sub_resource type="Curve3D" id="Curve3D_kumt2"]
+_data = {
+"points": PackedVector3Array(0, 0, 0, 0, 0, 0, -10, 1, -10, 0, 0, 0, 0, 0, 0, 10, 1, -10, 0, 0, 0, 0, 0, 0, 10, 1, 10, 0, 0, 0, 0, 0, 0, -10, 1, 10, 0, 0, 0, 0, 0, 0, -10, 1, -10),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0)
+}
+point_count = 5
+
+[node name="Main" type="Game"]
 
 [node name="Ground" type="StaticBody3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1, 0)
@@ -24,6 +31,7 @@ transform = Transform3D(1, 0, 0, 0, 0, 1, 0, -1, 0, 0, 10, 0)
 shadow_enabled = true
 
 [node name="Player" parent="." instance=ExtResource("1_7633l")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
 
 [node name="CameraPivot" type="Marker3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 0, 19, 19)
@@ -31,3 +39,13 @@ transform = Transform3D(1, 0, 0, 0, 0.707107, 0.707107, 0, -0.707107, 0.707107, 
 [node name="Camera3D" type="Camera3D" parent="CameraPivot"]
 projection = 1
 size = 19.0
+
+[node name="SpawnPath" type="Path3D" parent="."]
+curve = SubResource("Curve3D_kumt2")
+
+[node name="SpawnLocation" type="PathFollow3D" parent="SpawnPath"]
+transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, -10, 1, -10)
+
+[node name="MobTimer" type="Timer" parent="."]
+wait_time = 0.5
+autostart = true

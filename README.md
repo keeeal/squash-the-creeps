@@ -2,7 +2,7 @@
 
 [![tests](https://github.com/keeeal/squash-the-creeps/actions/workflows/tests.yaml/badge.svg)](https://github.com/keeeal/squash-the-creeps/actions/workflows/tests.yaml)
 
-[Godot's 3D tutorial](https://docs.godotengine.org/en/stable/getting_started/first_3d_game/index.html#) in Rust
+This is my implementation of [Godot's 3D tutorial](https://docs.godotengine.org/en/stable/getting_started/first_3d_game/index.html#) in Rust. There are many like it, but this one is mine.
 
 ### Setup
 

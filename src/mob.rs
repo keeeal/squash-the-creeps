@@ -1,12 +1,12 @@
 use godot::global::{randf_range, randi_range};
 use std::f64::consts::FRAC_PI_4;
 
-use godot::classes::{CharacterBody3D, ICharacterBody3D};
+use godot::classes::{CharacterBody3D, ICharacterBody3D, VisibleOnScreenNotifier3D};
 use godot::prelude::*;
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody3D)]
-struct Mob {
+pub struct Mob {
     base: Base<CharacterBody3D>,
 
     min_speed: f32,
@@ -26,10 +26,21 @@ impl ICharacterBody3D for Mob {
     fn physics_process(&mut self, _delta: f64) {
         self.base_mut().move_and_slide();
     }
+
+    fn ready(&mut self) {
+        let callable = self
+            .base()
+            .callable("_on_visible_on_screen_notifier_3d_screen_exited");
+        let mut notifier = self
+            .base()
+            .get_node_as::<VisibleOnScreenNotifier3D>("VisibleOnScreenNotifier3D");
+        notifier.connect(StringName::from("screen_exited"), callable);
+    }
 }
 
 #[godot_api]
 impl Mob {
+    #[func]
     fn initialize(&mut self, start_position: Vector3, player_position: Vector3) {
         self.base_mut()
             .look_at_from_position(start_position, player_position);
@@ -42,6 +53,7 @@ impl Mob {
         );
     }
 
+    #[func]
     fn _on_visible_on_screen_notifier_3d_screen_exited(&mut self) {
         self.base_mut().queue_free();
     }

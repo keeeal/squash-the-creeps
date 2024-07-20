@@ -1,11 +1,11 @@
 [gd_scene load_steps=3 format=3 uid="uid://di6ak0a5owm3"]
 
-[ext_resource type="PackedScene" uid="uid://8l6xs4s7igpi" path="res://assets/models/mob.glb" id="1_b6oyv"]
+[ext_resource type="PackedScene" uid="uid://s6bk3cgqnens" path="res://assets/models/mob.glb" id="1_b6oyv"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_j7tvv"]
 size = Vector3(2, 1.2, 3)
 
-[node name="CharacterBody3D" type="CharacterBody3D"]
+[node name="Mob" type="Mob"]
 
 [node name="Pivot" type="Node3D" parent="."]
 

@@ -1,9 +1,9 @@
-use godot::classes::{CharacterBody3D, ICharacterBody3D};
+use godot::classes::{CharacterBody3D, ICharacterBody3D, InputEvent};
 use godot::prelude::*;
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody3D)]
-struct Player {
+pub struct Player {
     base: Base<CharacterBody3D>,
 
     speed: f32,
