@@ -1,5 +1,6 @@
-use godot::classes::{Area3D, CharacterBody3D, ICharacterBody3D};
+use godot::classes::{AnimationPlayer, Area3D, CharacterBody3D, ICharacterBody3D};
 use godot::prelude::*;
+use std::f32::consts::FRAC_PI_6;
 
 use crate::mob::Mob;
 
@@ -55,6 +56,13 @@ impl ICharacterBody3D for Player {
             self.base()
                 .get_node_as::<Node3D>("Pivot")
                 .look_at(self.base().get_position() + direction);
+            self.base()
+                .get_node_as::<AnimationPlayer>("AnimationPlayer")
+                .set_speed_scale(4.0);
+        } else {
+            self.base()
+                .get_node_as::<AnimationPlayer>("AnimationPlayer")
+                .set_speed_scale(1.0);
         }
 
         self.target_velocity.x = direction.x * self.speed;
@@ -65,10 +73,6 @@ impl ICharacterBody3D for Player {
         } else if input.is_action_just_pressed(StringName::from("move_jump")) {
             self.target_velocity.y = self.jump_impulse;
         }
-
-        let _target_velocity = self.target_velocity.clone();
-        self.base_mut().set_velocity(_target_velocity);
-        self.base_mut().move_and_slide();
 
         for index in 0..self.base().get_slide_collision_count() {
             let collision = self.base_mut().get_slide_collision(index).unwrap();
@@ -85,6 +89,15 @@ impl ICharacterBody3D for Player {
                 }
             }
         }
+
+        let _target_velocity = self.target_velocity.clone();
+        self.base_mut().set_velocity(_target_velocity);
+        self.base_mut().move_and_slide();
+
+        let mut pivot = self.base().get_node_as::<Node3D>("Pivot");
+        let mut pivot_rotation = pivot.get_rotation();
+        pivot_rotation.x = FRAC_PI_6 * self.base().get_velocity().y / self.jump_impulse;
+        pivot.set_rotation(pivot_rotation);
     }
 }
 
