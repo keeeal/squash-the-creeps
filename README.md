@@ -20,10 +20,16 @@ To build the project:
 make build
 ```
 
-Then to run the game:
+To run the game:
 
 ```
 make run
 ```
 
-<!-- ![squash-the-creeps-final.gif](https://docs.godotengine.org/en/stable/_images/squash-the-creeps-final.gif) -->
+#### NOTE
+
+The code in this repo should be familiar to someone folling along with the tutorial, I.E. I have tried to keep the general structure the same. However, it deviates in the following ways:
+- All signals are connected in the code rather than in the project using the editor. This felt more natural to me since the signals and the methods they are connected to constitute behaviour, many of which are also defined in this code.
+- After completing the tutorial, I changed the way the score is updated. Specifically, hitting the `N`ᵗʰ creep in a combo (without touching the ground) adds `2^N` points. I did this as an example of a signal with an argument - and also because I am pretty sure that is what can be seen in the gif on the tutorial's first page:
+
+![squash-the-creeps-final.gif](https://docs.godotengine.org/en/stable/_images/squash-the-creeps-final.gif)
