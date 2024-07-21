@@ -1,7 +1,9 @@
 use godot::global::{randf_range, randi_range};
 use std::f64::consts::FRAC_PI_4;
 
-use godot::classes::{CharacterBody3D, ICharacterBody3D, VisibleOnScreenNotifier3D};
+use godot::classes::{
+    AnimationPlayer, CharacterBody3D, ICharacterBody3D, VisibleOnScreenNotifier3D,
+};
 use godot::prelude::*;
 
 #[derive(GodotClass)]
@@ -49,6 +51,9 @@ impl Mob {
         self.base_mut().set_velocity(
             (Vector3::FORWARD * random_speed as f32).rotated(Vector3::UP, rotation_y),
         );
+        self.base()
+            .get_node_as::<AnimationPlayer>("AnimationPlayer")
+            .set_speed_scale(random_speed as f32 / self.min_speed)
     }
 
     #[func]
@@ -57,9 +62,10 @@ impl Mob {
     }
 
     #[func]
-    fn squash(&mut self) {
+    fn squash(&mut self, combo_count: u32) {
+        println!("Squashed with combo count: {}", combo_count);
         self.base_mut()
-            .emit_signal(StringName::from("squashed"), &[]);
+            .emit_signal(StringName::from("squashed"), &[Variant::from(combo_count)]);
         self.base_mut().queue_free();
     }
 

@@ -12,6 +12,7 @@ pub struct Player {
     fall_acceleration: f32,
     jump_impulse: f32,
     bounce_impulse: f32,
+    combo_count: u32,
     target_velocity: Vector3,
 }
 
@@ -24,6 +25,7 @@ impl ICharacterBody3D for Player {
             fall_acceleration: 75.0,
             jump_impulse: 20.0,
             bounce_impulse: 16.0,
+            combo_count: 0,
             target_velocity: Vector3::ZERO,
         }
     }
@@ -71,6 +73,7 @@ impl ICharacterBody3D for Player {
         if !self.base().is_on_floor() {
             self.target_velocity.y -= self.fall_acceleration * delta as f32;
         } else if input.is_action_just_pressed(StringName::from("move_jump")) {
+            self.combo_count = 0;
             self.target_velocity.y = self.jump_impulse;
         }
 
@@ -83,8 +86,12 @@ impl ICharacterBody3D for Player {
             if collider.is_in_group(StringName::from("mob")) {
                 let mut mob = collider.try_cast::<Mob>().unwrap();
                 if Vector3::UP.dot(collision.get_normal()) > 0.1 {
-                    mob.call(StringName::from("squash"), &[]);
+                    mob.call(
+                        StringName::from("squash"),
+                        &[Variant::from(self.combo_count)],
+                    );
                     self.target_velocity.y = self.bounce_impulse;
+                    self.combo_count += 1;
                     break;
                 }
             }

@@ -5,7 +5,7 @@ use godot::prelude::*;
 #[class(base=Label)]
 pub struct ScoreLabel {
     base: Base<Label>,
-    score: i64,
+    score: u64,
 }
 
 #[godot_api]
@@ -30,8 +30,8 @@ impl ScoreLabel {
 #[godot_api]
 impl ScoreLabel {
     #[func]
-    fn on_mob_squashed(&mut self) {
-        self.score += 1;
+    fn on_mob_squashed(&mut self, combo_count: u32) {
+        self.score += (2 as u64).pow(combo_count);
         self.update_text();
     }
 }
