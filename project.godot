@@ -15,10 +15,18 @@ run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.2", "Forward Plus")
 config/icon="res://assets/icon.png"
 
+[autoload]
+
+Music="*res://scenes/music.tscn"
+
 [display]
 
 window/size/viewport_width=720
 window/size/viewport_height=540
+
+[filesystem]
+
+import/blender/enabled=false
 
 [input]
 

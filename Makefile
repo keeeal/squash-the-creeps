@@ -7,6 +7,9 @@ build:
 edit:
 	$(godot4) --editor
 
+format:
+	cargo fmt
+
 run:
 	$(godot4)
 

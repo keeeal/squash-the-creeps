@@ -1,4 +1,4 @@
-use godot::classes::{CharacterBody3D, ICharacterBody3D, Node};
+use godot::classes::{Area3D, CharacterBody3D, ICharacterBody3D};
 use godot::prelude::*;
 
 use crate::mob::Mob;
@@ -7,7 +7,6 @@ use crate::mob::Mob;
 #[class(base=CharacterBody3D)]
 pub struct Player {
     base: Base<CharacterBody3D>,
-
     speed: f32,
     fall_acceleration: f32,
     jump_impulse: f32,
@@ -26,6 +25,13 @@ impl ICharacterBody3D for Player {
             bounce_impulse: 16.0,
             target_velocity: Vector3::ZERO,
         }
+    }
+
+    fn ready(&mut self) {
+        self.base().get_node_as::<Area3D>("MobDetector").connect(
+            StringName::from("body_entered"),
+            self.base().callable("on_mob_detector_body_entered"),
+        );
     }
 
     fn physics_process(&mut self, delta: f64) {
@@ -67,7 +73,7 @@ impl ICharacterBody3D for Player {
         for index in 0..self.base().get_slide_collision_count() {
             let collision = self.base_mut().get_slide_collision(index).unwrap();
             let collider = match collision.get_collider() {
-                Some(collider) => collider.try_cast::<Node>().unwrap(),
+                Some(collider) => collider.try_cast::<Node3D>().unwrap(),
                 None => continue,
             };
             if collider.is_in_group(StringName::from("mob")) {
@@ -80,4 +86,21 @@ impl ICharacterBody3D for Player {
             }
         }
     }
+}
+
+#[godot_api]
+impl Player {
+    #[func]
+    fn on_mob_detector_body_entered(&mut self, _body: Gd<Node3D>) {
+        self.die();
+    }
+
+    #[func]
+    fn die(&mut self) {
+        self.base_mut().emit_signal(StringName::from("hit"), &[]);
+        self.base_mut().queue_free();
+    }
+
+    #[signal]
+    fn hit(&self);
 }

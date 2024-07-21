@@ -8,7 +8,6 @@ use godot::prelude::*;
 #[class(base=CharacterBody3D)]
 pub struct Mob {
     base: Base<CharacterBody3D>,
-
     min_speed: f32,
     max_speed: f32,
 }
@@ -28,13 +27,12 @@ impl ICharacterBody3D for Mob {
     }
 
     fn ready(&mut self) {
-        let callable = self
-            .base()
-            .callable("_on_visible_on_screen_notifier_3d_screen_exited");
-        let mut notifier = self
-            .base()
-            .get_node_as::<VisibleOnScreenNotifier3D>("VisibleOnScreenNotifier3D");
-        notifier.connect(StringName::from("screen_exited"), callable);
+        self.base()
+            .get_node_as::<VisibleOnScreenNotifier3D>("VisibleOnScreenNotifier3D")
+            .connect(
+                StringName::from("screen_exited"),
+                self.base().callable("on_screen_exited"),
+            );
     }
 }
 
@@ -54,12 +52,17 @@ impl Mob {
     }
 
     #[func]
-    fn _on_visible_on_screen_notifier_3d_screen_exited(&mut self) {
+    fn on_screen_exited(&mut self) {
         self.base_mut().queue_free();
     }
 
     #[func]
     fn squash(&mut self) {
+        self.base_mut()
+            .emit_signal(StringName::from("squashed"), &[]);
         self.base_mut().queue_free();
     }
+
+    #[signal]
+    fn squashed(&self);
 }

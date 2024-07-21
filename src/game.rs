@@ -1,9 +1,10 @@
-use godot::classes::{INode, Node, PathFollow3D, Timer};
+use godot::classes::{ColorRect, INode, InputEvent, Node, PathFollow3D, Timer};
 use godot::global::randf;
 use godot::prelude::*;
 
 use crate::mob::Mob;
 use crate::player::Player;
+use crate::score_label::ScoreLabel;
 
 #[derive(GodotClass)]
 #[class(base=Node)]
@@ -22,16 +23,36 @@ impl INode for Game {
     }
 
     fn ready(&mut self) {
-        let callable = self.base_mut().callable("_on_mob_timer_timeout");
-        let mut mob_timer = self.base().get_node_as::<Timer>("MobTimer");
-        mob_timer.connect(StringName::from("timeout"), callable);
+        self.base().get_node_as::<Timer>("MobTimer").connect(
+            StringName::from("timeout"),
+            self.base().callable("on_mob_timer_timeout"),
+        );
+        self.base().get_node_as::<Player>("Player").connect(
+            StringName::from("hit"),
+            self.base().callable("on_player_hit"),
+        );
+
+        self.base()
+            .get_node_as::<ColorRect>("UserInterface/Retry")
+            .hide();
+    }
+
+    fn unhandled_input(&mut self, event: Gd<InputEvent>) {
+        if event.is_action_pressed(StringName::from("ui_accept"))
+            && self
+                .base()
+                .get_node_as::<ColorRect>("UserInterface/Retry")
+                .is_visible()
+        {
+            self.base().get_tree().unwrap().reload_current_scene();
+        }
     }
 }
 
 #[godot_api]
 impl Game {
     #[func]
-    fn _on_mob_timer_timeout(&mut self) {
+    fn on_mob_timer_timeout(&mut self) {
         let mut mob = self.mob_scene.instantiate_as::<Mob>();
         let mut mob_spawn_location = self
             .base()
@@ -45,6 +66,20 @@ impl Game {
                 Variant::from(player_position),
             ],
         );
+        mob.connect(
+            StringName::from("squashed"),
+            self.base()
+                .get_node_as::<ScoreLabel>("UserInterface/ScoreLabel")
+                .callable("on_mob_squashed"),
+        );
         self.base_mut().add_child(mob.upcast());
+    }
+
+    #[func]
+    fn on_player_hit(&mut self) {
+        self.base().get_node_as::<Timer>("MobTimer").stop();
+        self.base()
+            .get_node_as::<ColorRect>("UserInterface/Retry")
+            .show();
     }
 }
