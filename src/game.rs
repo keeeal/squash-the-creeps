@@ -72,7 +72,7 @@ impl Game {
                 .get_node_as::<ScoreLabel>("UserInterface/ScoreLabel")
                 .callable("on_mob_squashed"),
         );
-        self.base_mut().add_child(mob.upcast());
+        self.base_mut().add_child(mob.upcast::<Node>());
     }
 
     #[func]

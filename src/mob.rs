@@ -63,7 +63,6 @@ impl Mob {
 
     #[func]
     fn squash(&mut self, combo_count: u32) {
-        println!("Squashed with combo count: {}", combo_count);
         self.base_mut()
             .emit_signal(StringName::from("squashed"), &[Variant::from(combo_count)]);
         self.base_mut().queue_free();

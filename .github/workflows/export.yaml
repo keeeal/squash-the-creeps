@@ -1,0 +1,25 @@
+name: export
+
+on:
+  release:
+    types: [released]
+
+env:
+  EXPORT_NAME: squash-the-creeps
+
+jobs:
+  export-linux:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - uses: abarichello/godot-ci@4.2.2-stable
+    - name: Linux build
+      run: |
+        mkdir -v -p build/linux
+        godot --headless --verbose --export-release "Linux/X11" build/linux/${EXPORT_NAME}
+    - name: Upload artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: linux
+        path: build/linux
